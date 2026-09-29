@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>하객 버스 운행 및 예식 안내</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Gowun Dodum', sans-serif;
+        background-color: #eeeeee;
+        display: flex;
+        justify-content: center;
+        color: #333;
+        overflow-x: hidden;
+    }
+
+    /* --- 1. 편지 봉투 오프닝 애니메이션 --- */
+    #envelopeScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #f4efea;
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 1s ease-in-out;
+    }
+
+    .envelope-wrapper {
+        position: relative;
+        width: 300px;
+        height: 200px;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    .envelope {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #e0d5c1;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        border-radius: 4px;
+        z-index: 2;
+    }
+
+    .envelope-back {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #d1c4ac;
+        z-index: 0;
+        border-radius: 4px;
+    }
+
+    .letter {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 280px;
+        height: 180px;
+        background-color: #fff;
+        z-index: 1;
+        transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        border-radius: 2px;
+    }
+    .letter-text {
+        text-align: center;
+        color: #555;
+        font-size: 15px;
+        opacity: 0;
+        transition: opacity 0.5s ease 1s;
+    }
+
+    .envelope-front {
+        position: absolute;
+        bottom: 0;
+        width: 0; 
+        height: 0; 
+        border-left: 150px solid #e8dcc7;
+        border-right: 150px solid #e8dcc7;
+        border-bottom: 100px solid #ebdnc5;
+        border-bottom-color: #e3d6be;
+        z-index: 3;
+    }
+
+    .flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0; 
+        height: 0; 
+        border-left: 150px solid transparent;
+        border-right: 150px solid transparent;
+        border-top: 120px solid #d9ccb6;
+        z-index: 4;
+        transform-origin: top;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .open-envelope .flap {
+        transform: rotateX(180deg);
+        z-index: 0;
+    }
+    .open-envelope .letter {
+        transform: translateY(-80px);
+        z-index: 5;
+    }
+    .open-envelope .letter-text {
+        opacity: 1;
+    }
+
+    .open-guide {
+        color: #777;
+        font-size: 14px;
+        animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 1; }
+    }
+
+
+    /* --- 2. 본문 내용 디자인 --- */
+    .main-container {
+        max-width: 480px;
+        width: 100%;
+        background-color: #fbfaf6;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        text-align: center;
+        padding-bottom: 60px;
+        position: relative;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+    }
+    .main-container.show {
+        opacity: 1;
+    }
+
+    .main-img {
+        width: 100%;
+        display: block;
+        margin-top: 20px;
+    }
+    
+    .title {
+        font-size: 20px;
+        margin: 50px 0 30px;
+        font-weight: bold;
+        color: #222;
+    }
+    
+    .content {
+        line-height: 2.2;
+        font-size: 15px;
+        margin-bottom: 30px;
+        padding: 0 25px;
+        color: #444;
+        text-align: left;
+        word-break: keep-all;
+    }
+
+    /* 버스 정보 박스 */
+    .bus-info {
+        background-color: #fff;
+        border: 1px solid #e0d5c1;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin: 0 25px 35px;
+        text-align: left;
+        font-size: 14px;
+        line-height: 1.8;
+        color: #444;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .bus-info strong {
+        color: #333;
+    }
+    .bus-info-title {
+        font-size: 15px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        display: block;
+        color: #222;
+    }
+
+    /* 카테고리 제목 */
+    .section-title {
+        font-size: 17px;
+        font-weight: bold;
+        color: #333;
+        text-align: left;
+        margin: 0 25px 12px 25px;
+        padding-left: 10px;
+        border-left: 4px solid #d1c4ac;
+    }
+
+    /* 테이블 스타일 */
+    .schedule-table {
+        width: 90%;
+        margin: 0 auto 35px auto;
+        border-collapse: collapse;
+        font-size: 14px;
+        text-align: left;
+        background: #fff;
+    }
+    .schedule-table th, .schedule-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #e0e0e0;
+        vertical-align: middle;
+        line-height: 1.6;
+    }
+    .schedule-table th {
+        background-color: #f4efea;
+        color: #555;
+        font-weight: bold;
+        text-align: center;
+        width: 25%;
+    }
+    .schedule-table td {
+        color: #333;
+    }
+    
+    .location-desc {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* 네이버 지도 버튼 */
+    .map-btn {
+        display: inline-block;
+        background-color: #03c75a;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .map-btn:hover {
+        background-color: #02b350;
+    }
+    .map-icon {
+        margin-right: 4px;
+        font-size: 11px;
+    }
+
+    .footer-msg {
+        font-size: 15px;
+        color: #444;
+        line-height: 2.2;
+        padding: 30px 20px;
+        text-align: center;
+        background-color: #f4efea;
+        margin-top: 10px;
+        border-radius: 8px;
+        width: 80%;
+        margin: 0 auto;
+    }
+
+</style>
+</head>
+<body>
+
+<!-- 1. 오프닝 봉투 화면 -->
+<div id="envelopeScreen">
+    <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()">
+        <div class="envelope-back"></div>
+        <div class="letter">
+            <div class="letter-text">귀한 걸음 해주셔서<br>감사합니다</div>
+        </div>
+        <div class="envelope"></div>
+        <div class="envelope-front"></div>
+        <div class="flap"></div>
+    </div>
+    <div class="open-guide" id="openGuide">봉투를 터치하여 열어주세요</div>
+</div>
+
+<!-- 2. 메인 안내문 화면 -->
+<div class="main-container" id="mainContainer">
+    
+    <img class="main-img" src="40907886-22f2-466e-aed7-ff03c05682d0.jpg" alt="신랑 신부 사진">
+
+    <div class="title">전세버스 운행 및 예식 안내</div>
+
+    <div class="content">
+        바쁘신 와중에도 저희 결혼식에 참석해 주시고 따뜻한 축하를 보내주셔서 진심으로 감사드립니다.<br><br>
+        하객 여러분께서 편안하게 이동하실 수 있도록 버스 운행 일정을 아래와 같이 안내해 드립니다.<br><br>
+        각 탑승지에서는 승차를 위해 약 10분간 정차 후 이동할 예정이오니, 출발 시간에 맞춰 탑승해 주시기를 부탁드립니다.
+    </div>
+
+    <!-- 운행 버스 정보 -->
+    <div class="bus-info">
+        <span class="bus-info-title">🚌 운행 버스 정보</span>
+        • <strong>버스 업체 :</strong> 정운 고속 버스<br>
+        • <strong>차량 번호 :</strong> 미정 (추후 안내 예정)
+    </div>
+
+    <!-- 출발 일정 카테고리 -->
+    <div class="section-title">출발 일정 (거제/통영 ➔ 안성)</div>
+    <table class="schedule-table">
+        <tbody>
+            <tr>
+                <th>12:00</th>
+                <td>
+                    <strong>대교 터미널 출발</strong><br>
+                    <span class="location-desc">경남 거제시 사등면 거제남서로 5344</span>
+                    <a href="https://map.naver.com/p/search/경남 거제시 사등면 거제남서로 5344" target="_blank" class="map-btn"><span class="map-icon">🗺️</span>네이버 지도 보기</a>
+                </td>
+            </tr>
+            <tr>
+                <th>12:10</th>
+                <td>
+                    <strong>통영 고려병원 도착</strong><br>
+                    <span class="location-desc">경남 통영시 중앙로 310</span>
+                    <a href="https://map.naver.com/p/search/경남 통영시 중앙로 310" target="_blank" class="map-btn"><span class="map-icon">🗺️</span>네이버 지도 보기</a>
+                </td>
+            </tr>
+            <tr>
+                <th>12:20</th>
+                <td>
+                    <strong>통영 고려병원 출발</strong><br>
+                    <span class="location-desc">(10분 정차 후 인원 파악 및 출발)</span>
+                </td>
+            </tr>
+            <tr>
+                <th>14:20</th>
+                <td>
+                    <strong>인삼랜드 휴게소 도착</strong><br>
+                    <span class="location-desc">중간 휴식</span>
+                    <a href="https://map.naver.com/p/search/인삼랜드 휴게소" target="_blank" class="map-btn"><span class="map-icon">🗺️</span>네이버 지도 보기</a>
+                </td>
+            </tr>
+            <tr>
+                <th>16:20</th>
+                <td>
+                    <strong>안성 오하하우스 도착</strong><br>
+                    <span class="location-desc">오하하우스 웨딩하우스 (최종 목적지)</span>
+                    <a href="https://map.naver.com/p/search/안성 오하하우스 웨딩하우스" target="_blank" class="map-btn"><span class="map-icon">🗺️</span>네이버 지도 보기</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 복귀 일정 카테고리 -->
+    <div class="section-title">복귀 일정 (안성 ➔ 통영/거제)</div>
+    <table class="schedule-table">
+        <tbody>
+            <tr>
+                <th>19:30</th>
+                <td>
+                    <strong>안성 오하하우스 출발</strong><br>
+                    <span class="location-desc">예식 종료 후 귀가 시작</span>
+                </td>
+            </tr>
+            <tr>
+                <th>이동 중</th>
+                <td>
+                    <strong>휴게소 하차 (1~2회)</strong><br>
+                    <span class="location-desc">고속도로 휴게소 중간 휴식</span>
+                </td>
+            </tr>
+            <tr>
+                <th>23:40</th>
+                <td>
+                    <strong>통영 고려병원 하차</strong><br>
+                    <span class="location-desc">경남 통영시 중앙로 310</span>
+                </td>
+            </tr>
+            <tr>
+                <th>23:50</th>
+                <td>
+                    <strong>거제대교 하차</strong><br>
+                    <span class="location-desc">경남 거제시 사등면 거제남서로 5344</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer-msg">
+        먼 길 와주신 발걸음에 다시 한번<br>깊은 감사의 말씀을 올립니다.<br>
+        안전하고 편안하게 모시겠습니다.
+    </div>
+</div>
+
+<script>
+    function openEnvelope() {
+        const wrapper = document.getElementById('envelopeWrapper');
+        const guide = document.getElementById('openGuide');
+        const envelopeScreen = document.getElementById('envelopeScreen');
+        const mainContainer = document.getElementById('mainContainer');
+
+        if (wrapper.classList.contains('open-envelope')) return;
+
+        wrapper.classList.add('open-envelope');
+        guide.style.opacity = '0'; 
+
+        setTimeout(() => {
+            envelopeScreen.style.opacity = '0';
+            mainContainer.style.display = 'block';
+            
+            setTimeout(() => {
+                envelopeScreen.style.display = 'none'; 
+                mainContainer.classList.add('show');   
+                window.scrollTo(0, 0); 
+            }, 500); 
+
+        }, 2000); 
+    }
+</script>
+
+</body>
+</html>
