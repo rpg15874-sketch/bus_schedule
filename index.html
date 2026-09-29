@@ -18,42 +18,42 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
 <style>
-    body { margin: 0; padding: 0; font-family: 'Gowun Dodum', sans-serif; background-color: #eeeeee; display: flex; justify-content: center; color: #333; overflow-x: hidden; }
+    body { margin: 0; padding: 0; font-family: 'Gowun Dodum', sans-serif; background-color: #dde3e7; display: flex; justify-content: center; color: #2b3740; overflow-x: hidden; }
 
     /* 1. 편지 봉투 오프닝 */
-    #envelopeScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f4efea; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s ease-in-out; }
+    #envelopeScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #e3eaee; z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s ease-in-out; }
     .envelope-wrapper { position: relative; width: 300px; height: 200px; cursor: pointer; margin-bottom: 20px; }
-    .envelope { position: absolute; width: 100%; height: 100%; background-color: #e0d5c1; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border-radius: 4px; z-index: 2; }
-    .envelope-back { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #d1c4ac; z-index: 0; border-radius: 4px; }
+    .envelope { position: absolute; width: 100%; height: 100%; background-color: #b7c6d0; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border-radius: 4px; z-index: 2; }
+    .envelope-back { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #94a8b5; z-index: 0; border-radius: 4px; }
     .letter { position: absolute; top: 10px; left: 10px; width: 280px; height: 180px; background-color: #fff; z-index: 1; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-radius: 2px; }
-    .letter-text { text-align: center; color: #555; font-size: 15px; opacity: 0; transition: opacity 0.5s ease 1s; }
-    .envelope-front { position: absolute; bottom: 0; width: 0; height: 0; border-left: 150px solid #e8dcc7; border-right: 150px solid #e8dcc7; border-bottom: 100px solid #e3d6be; z-index: 3; }
-    .flap { position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 150px solid transparent; border-right: 150px solid transparent; border-top: 120px solid #d9ccb6; z-index: 4; transform-origin: top; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    .letter-text { text-align: center; color: #4b5964; font-size: 15px; opacity: 0; transition: opacity 0.5s ease 1s; }
+    .envelope-front { position: absolute; bottom: 0; width: 0; height: 0; border-left: 150px solid #c6d3db; border-right: 150px solid #c6d3db; border-bottom: 100px solid #b3c3ce; z-index: 3; }
+    .flap { position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 150px solid transparent; border-right: 150px solid transparent; border-top: 120px solid #a3b5c1; z-index: 4; transform-origin: top; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
     .open-envelope .flap { transform: rotateX(180deg); z-index: 0; }
     .open-envelope .letter { transform: translateY(-80px); z-index: 5; }
     .open-envelope .letter-text { opacity: 1; }
-    .open-guide { color: #777; font-size: 14px; animation: pulse 1.5s infinite; }
+    .open-guide { color: #6c7a85; font-size: 14px; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
     /* 2. 본문 */
-    .main-container { max-width: 480px; width: 100%; background-color: #fbfaf6; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; padding-bottom: 60px; position: relative; opacity: 0; transition: opacity 1s ease-in-out; }
+    .main-container { max-width: 480px; width: 100%; background-color: #f7f9fa; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; padding-bottom: 60px; position: relative; opacity: 0; transition: opacity 1s ease-in-out; }
     .main-container.show { opacity: 1; }
     .main-img { width: 100%; display: block; margin-top: 20px; }
-    .title { font-size: 20px; margin: 50px 0 30px; font-weight: bold; color: #222; }
-    .content { line-height: 2.2; font-size: 15px; margin-bottom: 30px; padding: 0 25px; color: #444; text-align: left; word-break: keep-all; }
-    .bus-info { background-color: #fff; border: 1px solid #e0d5c1; border-radius: 8px; padding: 15px 20px; margin: 0 25px 35px; text-align: left; font-size: 14px; line-height: 1.8; color: #444; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .bus-info strong { color: #333; }
-    .bus-info-title { font-size: 15px; font-weight: bold; margin-bottom: 8px; display: block; color: #222; }
-    .section-title { font-size: 17px; font-weight: bold; color: #333; text-align: left; margin: 0 25px 12px 25px; padding-left: 10px; border-left: 4px solid #d1c4ac; }
+    .title { font-size: 20px; margin: 50px 0 30px; font-weight: bold; color: #1c2830; }
+    .content { line-height: 2.2; font-size: 15px; margin-bottom: 30px; padding: 0 25px; color: #3a4750; text-align: left; word-break: keep-all; }
+    .bus-info { background-color: #fff; border: 1px solid #b7c6d0; border-radius: 8px; padding: 15px 20px; margin: 0 25px 35px; text-align: left; font-size: 14px; line-height: 1.8; color: #3a4750; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .bus-info strong { color: #2b3740; }
+    .bus-info-title { font-size: 15px; font-weight: bold; margin-bottom: 8px; display: block; color: #1c2830; }
+    .section-title { font-size: 17px; font-weight: bold; color: #2b3740; text-align: left; margin: 0 25px 12px 25px; padding-left: 10px; border-left: 4px solid #94a8b5; }
     .schedule-table { width: 90%; margin: 0 auto 35px auto; border-collapse: collapse; font-size: 14px; text-align: left; background: #fff; }
-    .schedule-table th, .schedule-table td { padding: 12px 10px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; line-height: 1.6; }
-    .schedule-table th { background-color: #f4efea; color: #555; font-weight: bold; text-align: center; width: 25%; }
-    .schedule-table td { color: #333; }
-    .location-desc { font-size: 13px; color: #666; margin-bottom: 8px; display: block; }
+    .schedule-table th, .schedule-table td { padding: 12px 10px; border-bottom: 1px solid #d6dee3; vertical-align: middle; line-height: 1.6; }
+    .schedule-table th { background-color: #e3eaee; color: #4b5964; font-weight: bold; text-align: center; width: 25%; }
+    .schedule-table td { color: #2b3740; }
+    .location-desc { font-size: 13px; color: #5c6a75; margin-bottom: 8px; display: block; }
     .map-btn { display: inline-block; background-color: #03c75a; color: #ffffff; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .map-btn:hover { background-color: #02b350; }
     .map-icon { margin-right: 4px; font-size: 11px; }
-    .footer-msg { font-size: 15px; color: #444; line-height: 2.2; padding: 30px 20px; text-align: center; background-color: #f4efea; border-radius: 8px; width: 80%; margin: 10px auto 0; }
+    .footer-msg { font-size: 15px; color: #3a4750; line-height: 2.2; padding: 30px 20px; text-align: center; background-color: #e3eaee; border-radius: 8px; width: 80%; margin: 10px auto 0; }
 </style>
 </head>
 <body>
